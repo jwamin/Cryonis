@@ -77,7 +77,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         // Create a SceneKit plane to visualize the plane anchor using its position and extent.
         
-        let mynode = sceneInMemory.rootNode.childNode(withName: "box", recursively: true)!
+        let mynode = sceneInMemory.rootNode.childNode(withName: "box", recursively: true)!.clone()
         print(mynode)
         mynode.simdPosition = float3(planeAnchor.center.x, 0, planeAnchor.center.z)
         
