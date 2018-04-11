@@ -14,6 +14,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 
     @IBOutlet var sceneView: ARSCNView!
     let sceneInMemory:SCNScene! = SCNScene(named: "art.scnassets/ice.scn")!
+    var aim:UIView!
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -30,7 +31,12 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Set the scene to the view
         sceneView.scene = SCNScene()
         
-       
+       let rect = CGRect(origin: self.view.center, size: CGSize(width: 10, height: 10))
+        aim = UIView(frame: rect)
+        aim.backgroundColor = UIColor.red
+        aim.layer.opacity = 0.5
+        sceneView.addSubview(aim)
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
