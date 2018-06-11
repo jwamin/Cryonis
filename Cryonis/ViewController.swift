@@ -15,6 +15,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     @IBOutlet var sceneView: ARSCNView!
     let sceneInMemory:SCNScene! = SCNScene(named: "art.scnassets/ice.scn")!
     var aim:UIView!
+    var thisIsAHit:Bool = false
+    var pointerPosition:CGPoint = CGPoint.zero
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -34,8 +36,47 @@ class ViewController: UIViewController, ARSCNViewDelegate {
        let rect = CGRect(origin: self.view.center, size: CGSize(width: 10, height: 10))
         aim = UIView(frame: rect)
         aim.backgroundColor = UIColor.red
+        aim.autoresizingMask = [.flexibleBottomMargin,.flexibleTopMargin,.flexibleLeftMargin,.flexibleRightMargin]
         aim.layer.opacity = 0.5
         sceneView.addSubview(aim)
+        
+        let effect = UIBlurEffect(style: .regular)
+        let buttonContainer = UIVisualEffectView(effect: effect)
+        buttonContainer.frame = (CGRect(x: 0, y: 0, width: 60, height: 60))
+        let label = UIButton(frame: buttonContainer.frame)
+        label.setTitle("⭕️", for: .normal)
+        buttonContainer.contentView.addSubview(label)
+        label.autoresizingMask = [.flexibleBottomMargin,.flexibleTopMargin,.flexibleLeftMargin,.flexibleRightMargin]
+        label.addTarget(self, action: #selector(buttonPressed(_:)), for: .touchUpInside)
+        sceneView.addSubview(buttonContainer)
+        buttonContainer.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([buttonContainer.widthAnchor.constraint(equalToConstant: 60),buttonContainer.heightAnchor.constraint(equalToConstant: 60)])
+        
+        let x = NSLayoutConstraint(item: sceneView, attribute: .trailing, relatedBy: .equal, toItem: buttonContainer, attribute: .trailing, multiplier: 1.0, constant: 10.0)
+        let y = NSLayoutConstraint(item: sceneView, attribute: .bottom, relatedBy: .equal, toItem: buttonContainer, attribute: .bottom, multiplier: 1.0, constant: 10.0)
+        
+        
+        
+        NSLayoutConstraint.activate([x,y])
+        
+        
+    }
+    
+    @objc func buttonPressed(_ sender:Any){
+        print("buttonPressed")
+        
+        if(thisIsAHit){
+            let gothit = sceneView.hitTest(pointerPosition, options: nil)
+            print(gothit)
+            if gothit.count == 0 {
+                return
+            }
+            
+            
+            gothit.first!.node.removeFromParentNode()
+            
+            
+        }
         
     }
     
@@ -103,6 +144,48 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         node.addChildNode(mynode)
         
         //mynode.runAction(mynode.action(forKey: "action 0x7f97cebea770 #155")!)
+    }
+    
+    func renderer(_ renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: TimeInterval) {
+        if let positionThing = aim {
+            DispatchQueue.main.async {
+            let results = self.sceneView.hitTest(self.aim.center, options: nil)
+            
+            guard let result = results.first else {
+             
+                //pointerview.backgroundColor = UIColor.yellow;
+                
+                
+                    
+                    if(self.thisIsAHit != false){
+                        self.thisIsAHit=false
+                    }
+                    
+                    self.aim.backgroundColor = UIColor.red
+                    
+                
+                
+                
+                return;
+            }
+            
+            
+           
+            
+            self.pointerPosition = self.aim.center
+            if(self.thisIsAHit != true){
+                self.thisIsAHit = true
+            }
+            
+            
+       
+                self.aim.backgroundColor = UIColor.green
+            
+            
+            }
+        } else {
+            print("no dot")
+        }
     }
     
     func session(_ session: ARSession, didFailWithError error: Error) {
